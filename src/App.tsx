@@ -1,6 +1,6 @@
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import DataMap from "datamaps";
-import styled from "styled-components";
+import styled, { css } from "styled-components";
 
 const Container = styled.div`
   display: flex;
@@ -9,35 +9,82 @@ const Container = styled.div`
   align-items: center;
   flex-direction: column;
 `;
-
-const Map = styled.div`
+const Mixin = css`
   height: 100%;
   width: 100%;
+`;
+const Map = styled.div`
+  ${Mixin};
+`;
+
+const MapBox = styled.div`
+  flex: 1;
+  ${Mixin}
+`;
+
+const ButtonBox = styled.div`
+  padding: 2rem;
 `;
 
 function App() {
   const mapRef = useRef<HTMLDivElement>(null);
+  const [filter, setFilter] = useState<Record<string, string>>({});
+  const [map, setMap] = useState<any | null>(null);
   useEffect(() => {
     if (mapRef.current) {
-      const map = new DataMap({
-        element: mapRef.current,
-        projection: "mercator",
-        fills: {
-          defaultFill: "#ABDDA4",
-          authorHasTraveledTo: "#fa0fa0",
-        },
-      });
-      map.updateChoropleth({
-        USA: "red",
+      setMap((prev: any) => {
+        if (!prev) {
+          return new DataMap({
+            element: mapRef.current,
+            projection: "mercator",
+            fills: {
+              defaultFill: "#ABDDA4",
+              authorHasTraveledTo: "#fa0fa0",
+            },
+          });
+        }
+        return prev;
       });
     }
-    return () => {
-      console.log("de");
-    };
   }, [mapRef]);
+  if (map) {
+    map.updateChoropleth(filter);
+  }
   return (
     <Container>
-      <Map ref={mapRef} />
+      <ButtonBox>
+        <button
+          onClick={() => {
+            setFilter({ USA: "red" });
+          }}
+        >
+          필터1
+        </button>
+        <button
+          onClick={() => {
+            setFilter({ USA: "blue" });
+          }}
+        >
+          필터2
+        </button>
+        <button
+          onClick={() => {
+            setFilter({ USA: "green" });
+          }}
+        >
+          필터3
+        </button>
+        <button
+          onClick={() => {
+            setFilter({ USA: "yellow" });
+          }}
+        >
+          필터4
+        </button>
+      </ButtonBox>
+      <MapBox>
+        <Map ref={mapRef} />
+      </MapBox>
     </Container>
   );
 }
