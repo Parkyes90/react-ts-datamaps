@@ -1,6 +1,6 @@
-import React, { useEffect, useRef, useState } from "react";
-import DataMap from "datamaps";
-import styled, { css } from "styled-components";
+import React, { useState } from "react";
+import styled from "styled-components";
+import Map, { Mixin } from "./components/Map";
 
 const Container = styled.div`
   display: flex;
@@ -8,13 +8,6 @@ const Container = styled.div`
   justify-content: center;
   align-items: center;
   flex-direction: column;
-`;
-const Mixin = css`
-  height: 100%;
-  width: 100%;
-`;
-const Map = styled.div`
-  ${Mixin};
 `;
 
 const MapBox = styled.div`
@@ -27,29 +20,7 @@ const ButtonBox = styled.div`
 `;
 
 function App() {
-  const mapRef = useRef<HTMLDivElement>(null);
   const [filter, setFilter] = useState<Record<string, string>>({});
-  const [map, setMap] = useState<any | null>(null);
-  useEffect(() => {
-    if (mapRef.current) {
-      setMap((prev: any) => {
-        if (!prev) {
-          return new DataMap({
-            element: mapRef.current,
-            projection: "mercator",
-            fills: {
-              defaultFill: "#ABDDA4",
-              authorHasTraveledTo: "#fa0fa0",
-            },
-          });
-        }
-        return prev;
-      });
-    }
-  }, [mapRef]);
-  if (map) {
-    map.updateChoropleth(filter);
-  }
   return (
     <Container>
       <ButtonBox>
@@ -83,7 +54,7 @@ function App() {
         </button>
       </ButtonBox>
       <MapBox>
-        <Map ref={mapRef} />
+        <Map filter={filter} style={{ height: "100%", width: "100%" }} />
       </MapBox>
     </Container>
   );
